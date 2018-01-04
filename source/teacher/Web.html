@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Particle Rocks!</title>
+
+    <!-- This gives us access to jquery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <!-- This gives us access to bootstrap (adds fancy looking elements) -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
+    <!-- Plotly library: plot.ly/javascript/getting-started -->
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+  </head>
+  <body onload="ReadSensor()">
+
+    <!-- EXERCISE 2 -->
+    <div class="container pt-5">
+      <div class="jumbotron">
+        <h1>Particle Web Interface</h1>
+        <hr>
+        <!-- Add a button that calls the 'LedOn()' function when clicked. -->
+        <button onclick="LedOn()" class="btn btn-info btn-lg">LED On</button>
+        <!-- Add a button that calls the 'LedOn()' function when clicked. -->
+        <button onClick="LedOff()" class="btn btn-warning btn-lg">LED Off</button>
+        <hr>
+        <!-- EXERCISE 3 -->
+        <!-- Add a text area with an 'id' that can be used to update from javascript. -->
+        <div class="alert alert-dark text-info">
+          <h3>Sensor Value: <span id="sensorValue">0</span></h3>
+        </div>
+        <hr>
+        <div id="graph" class="mw-50"></div>
+      </div>
+    </div>
+
+    <script type="text/javascript">
+      // Add your own device ID.
+      var deviceId = "<DEVICE ID>";
+      // Add your own device token.
+      var accessToken = "<ACCESS TOKEN>";
+      // Add your led function name.
+      var functionName = "led";
+      // This is the URL to our function. The format is defined here:
+      // https://docs.particle.io/reference/api/#call-a-function
+      var functionUrl = "https://api.particle.io/v1/devices/" + deviceId + "/" + functionName;
+
+      // ==================================
+      // EXERCISE 2
+      // ==================================
+      function LedOn(){
+        // This is jQuery (a javascript library). See https://api.jquery.com/jquery.post/
+        $.post(functionUrl, {arg:"ON", access_token: accessToken});
+      }
+
+      function LedOff(){
+        // This is jQuery (a javascript library). See https://api.jquery.com/jquery.post/
+        $.post(functionUrl, {arg:"OFF", access_token: accessToken});
+      }
+
+      // ==================================
+      // EXERCISE 3
+      // ==================================
+      // Add the photo sensor variable name that we publish from the particle.
+      var variableName = "photoValue";
+      // This is the URL to our variable. The format is defined here:
+      // https://docs.particle.io/reference/api/#get-a-variable-value
+      var variableUrl = "https://api.particle.io/v1/devices/" + deviceId + "/" + variableName + "?access_token=" + accessToken;
+
+      function ReadSensor(){
+        setInterval(function(){
+          $.getJSON(variableUrl, function(json) {
+            document.getElementById("sensorValue").innerHTML = json.result;
+            // PlotData(json.result);
+          });
+        }, 1000);
+      }
+
+      // ==================================
+      // Plotting!
+      // ==================================
+      var arrayLength = 30
+      var newArray = []
+
+      // Initialize the data array to all 0's
+      for(var i = 0; i < arrayLength; i++) {
+        var y = 0
+        newArray[i] = y
+      }
+
+      var data = {
+          y: newArray,
+          mode: 'lines+markers',
+          line: {color: '#80CAF6'}
+      }
+
+      var layout = {
+        title: 'Photo Sensor Data',
+        xaxis: {
+          zeroline: true,
+          showticklabels: false
+        },
+        yaxis: {
+          range: [0,2000],
+        }
+      };
+
+      Plotly.plot('graph', [data], layout);
+
+      var interval = setInterval(function() {
+        // Grab the most recent value from the html document.
+        var data = document.getElementById("sensorValue").innerHTML;
+
+        // Add new value and remove the oldest.
+        newArray = newArray.concat(data);
+        newArray.splice(0, 1);
+
+        var data_update = {
+          y: [newArray]
+        };
+
+        Plotly.update('graph', data_update);
+      }, 500);
+
+    </script>
+  </body>
+</html>
