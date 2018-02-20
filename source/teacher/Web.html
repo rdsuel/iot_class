@@ -14,21 +14,24 @@
   </head>
   <body onload="ReadSensor()">
 
-    <!-- EXERCISE 2 -->
     <div class="container pt-5">
       <div class="jumbotron">
         <h1>Particle Web Interface</h1>
         <hr>
+        <!-- EXERCISE 2 -->
         <!-- Add a button that calls the 'LedOn()' function when clicked. -->
         <button onclick="LedOn()" class="btn btn-info btn-lg">LED On</button>
         <!-- Add a button that calls the 'LedOn()' function when clicked. -->
         <button onClick="LedOff()" class="btn btn-warning btn-lg">LED Off</button>
         <hr>
+
         <!-- EXERCISE 3 -->
         <!-- Add a text area with an 'id' that can be used to update from javascript. -->
         <div class="alert alert-dark text-info">
           <h3>Sensor Value: <span id="sensorValue">0</span></h3>
         </div>
+
+        <!-- Plotting -->
         <hr>
         <div id="graph" class="mw-50"></div>
       </div>
