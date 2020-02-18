@@ -3,42 +3,54 @@
 // -----------------------------------
 
 // Variables
+// Exercise 2: Blink the on-board LED at 60Hz.
+int boardLed = D7;
+bool boardLedState = LOW;
+Timer blinkTimer(500, Blink);
 
+// Exercise 3: Control external led with web function.
+int externalLed = D0;
+
+// Exercise 4: Read the light sensor with web variable.
+int sensorEnable = A5;
+int sensorInput = A0;
+int sensorValue = 0;
 
 void setup()
 {
-    // Setup GPIO pins.
-
-    // Enable the sensor.
-
-    // Particle API configuration:
-    // Exercise 2: expose the "led" function for controlling the LED over the web.
-    // Exercise 3: expose the "photoValue" variable for reading over the web.
-    // Exercise 4: subscribe to the "photoStatus" event for communicating with other devices.
+    // Exercise 2: Blink the on-board LED
+    
+    // Exercise 3: Led web function
+    
+    // Exercise 4: Sensor web variable.
+    
+    // Exercise 5: Subscribe to night Event.
 }
 
 void loop()
 {
-    // Exercise 3: Read the sensor and update the web variable.
-
-    // Exercise 4: Publish the "photoStatus" event here with the following value when:
-    // NOTE: Instructors only.
-    // > 400 = "DAY"
-    // < 300 = "NIGHT"
+    // Exercise 4: populate the sensor web variable.   
 }
 
-// Exercise 2: The function is called through the web API to control the LED.
+// Exercise 3: The function is called through the web API to control the LED.
+// If the incoming command is "ON", turn on the LED and return 0.
+// If the incoming command is "OFF", turn off the LED and return 1.
+// Otherwise return -1    
 int LedFunction(String command)
 {
-    // If the incoming command is "ON", turn on the LED and return 0.
-    // If the incoming command is "OFF", turn off the LED and return 1.
-    // Otherwise return -1
+
 }
 
-// Exercise 4: This subscription function is called when the "photoStatus" event is published.
+// Exercise 4: This subscription function is called when the "NightEvent" event is published.
+//If the received data is "ON", turn LEDs on and stop the blink timer.
+//If the received data is "OFF", turn LEDs off and start the blink timer.
 void SubscriptionHandler(const char *event, const char *data)
 {
-    //If the received data is "NIGHT", turn the on-board LED on.
-    //If the received data is "DAY", turn the on-board LED off.
-    // Hint: use strcmp
+
+}
+
+// Exercise 2: Timer callback function to blink the on-board LED,
+void Blink(void)
+{
+    
 }

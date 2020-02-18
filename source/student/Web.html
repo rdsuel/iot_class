@@ -34,11 +34,11 @@
 
     <script type="text/javascript">
       // Add your own device ID.
-      var deviceId = "<DEVICE ID>";
+      var deviceId = "<DEVICE ID>"
       // Add your own device token.
       var accessToken = "<ACCESS TOKEN>";
       // Add your led function name.
-      var functionName = "led";
+      var functionName = "SetLed";
       // This is the URL to our function. The format is defined here:
       // https://docs.particle.io/reference/api/#call-a-function
       var functionUrl = "https://api.particle.io/v1/devices/" + deviceId + "/" + functionName;
@@ -60,7 +60,7 @@
       // EXERCISE 4
       // ==================================
       // Add the photo sensor variable name that we publish from the particle.
-      var variableName = "photoValue";
+      var variableName = "SensorValue";
       // This is the URL to our variable. The format is defined here:
       // https://docs.particle.io/reference/api/#get-a-variable-value
       var variableUrl = "https://api.particle.io/v1/devices/" + deviceId + "/" + variableName + "?access_token=" + accessToken;

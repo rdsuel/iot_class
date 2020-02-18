@@ -3,88 +3,100 @@
 // -----------------------------------
 
 // Variables
+// Exercise 2: Blink the on-board LED at 60Hz.
 int boardLed = D7;
-int externalLed = D0;
-int sensorEnablePin = A5;
-int sensorInputPin = A0;
-int sensorValue = 0;
-bool dark = false;
+bool boardLedState = LOW;
+Timer blinkTimer(500, Blink);
 
+// Exercise 3: Control external led with web function.
+int externalLed = D0;
+
+// Exercise 4: Read the light sensor with web variable.
+int sensorEnable = A5;
+int sensorInput = A0;
+int sensorValue = 0;
 
 void setup()
 {
-    // Setup GPIO pins.
+    // Exercise 2: Blink the on-board LED
     pinMode(boardLed, OUTPUT);
+    blinkTimer.start();
+    
+    // Exercise 3: Led web function
     pinMode(externalLed, OUTPUT);
-    pinMode(sensorEnablePin, OUTPUT);
-
-    // Enable the sensor.
-    digitalWrite(sensorEnablePin, HIGH);
-
-    // Particle API configuration:
-    // Exercise 2: expose the "led" function for controlling the LED over the web.
-    Particle.function("led", LedFunction);
-
-    // Exercise 3: expose the "photoValue" variable for reading over the web.
-    Particle.variable("photoValue", sensorValue);
-
-    // Exercise 4: subscribe to the "photoStatus" event for communicating with other devices.
-    Particle.subscribe("photoStatus", SubscriptionHandler);
+    Particle.function("SetLed", LedFunction);
+    
+    // Exercise 4: Sensor web variable.
+    pinMode(sensorEnable, OUTPUT);
+    pinMode(sensorInput, INPUT);
+    digitalWrite(sensorEnable, HIGH);
+    Particle.variable("SensorValue", sensorValue);
+    
+    // Exercise 5: Subscribe to night Event.
+    Particle.subscribe("NightEvent", SubscriptionHandler, ALL_DEVICES);
+    Particle.function("InstructorPublishNightEvent", InstructorPublishNightEvent);
 }
 
 void loop()
 {
-    // Exercise 3: Read the sensor and update the web variable.
-    sensorValue = analogRead(sensorInputPin);
-
-    // Exercise 4: Publish the "photoStatus" event here with the following value when:
-    // NOTE: Instructors only.
-    // > 400 = "DAY"
-    // < 300 = "NIGHT"
-    if ((sensorValue < 300) && (dark == false))
-    {
-        dark = true;
-        Particle.publish("photoStatus", "NIGHT");
-    }
-    else if ((sensorValue > 400) && (dark == true))
-    {
-        dark = false;
-        Particle.publish("photoStatus", "DAY");
-    }
+    // Exercise 4: populate the sensor web variable.
+    sensorValue = analogRead(sensorInput);
+    
 }
 
-// Exercise 2: The function is called through the web API to control the LED.
+// Exercise 3: The function is called through the web API to control the LED.
+// If the incoming command is "ON", turn on the LED and return 0.
+// If the incoming command is "OFF", turn off the LED and return 1.
+// Otherwise return -1    
 int LedFunction(String command)
 {
-    //If the incoming command is "ON", turn on the LED and return 0.
-    if (command == "ON")
+    if(command.equals("ON"))
     {
         digitalWrite(externalLed, HIGH);
         return 0;
     }
-    //If the incoming command is "OFF", turn off the LED and return 1.
-    else if (command == "OFF")
+    else if(command.equals("OFF"))
     {
         digitalWrite(externalLed, LOW);
         return 1;
     }
-
-    //Otherwise return -1
-    return -1;
+    else
+    {
+        return -1;
+    }
 }
 
 // Exercise 4: This subscription function is called when the "photoStatus" event is published.
+//If the received data is "ON", turn LEDs on and stop the blink timer.
+//If the received data is "OFF", turn LEDs off and start the blink timer.
 void SubscriptionHandler(const char *event, const char *data)
 {
-    //If the received data is "NIGHT", turn the on-board LED on.
-    //If the received data is "DAY", turn the on-board LED off.
-    // Hint: use strcmp
-    if (strcmp(data, "NIGHT")==0)
+    String command = String(data);
+    
+    if(command.equals("ON"))
     {
+        blinkTimer.stop();
         digitalWrite(boardLed, HIGH);
+        digitalWrite(externalLed, HIGH);
     }
-    else if (strcmp(data, "DAY")==0)
+    else if(command.equals("OFF"))
     {
+        blinkTimer.start();
         digitalWrite(boardLed, LOW);
+        digitalWrite(externalLed, LOW);
     }
+}
+
+// Exercise 2: Timer callback function to blink the on-board LED,
+void Blink(void)
+{
+    boardLedState = !boardLedState;
+    digitalWrite(boardLed, boardLedState);
+}
+
+// Exercise 4: Public function for instructors to publish the NightEvent, which will 
+// turn the LEDs on for all subscribed particles in the class.
+int InstructorPublishNightEvent(String command)
+{
+    Particle.publish("NightEvent", command);
 }
