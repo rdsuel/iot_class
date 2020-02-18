@@ -66,7 +66,7 @@ int LedFunction(String command)
     }
 }
 
-// Exercise 4: This subscription function is called when the "photoStatus" event is published.
+// Exercise 4: This subscription function is called when the "NightEvent" event is published.
 //If the received data is "ON", turn LEDs on and stop the blink timer.
 //If the received data is "OFF", turn LEDs off and start the blink timer.
 void SubscriptionHandler(const char *event, const char *data)
